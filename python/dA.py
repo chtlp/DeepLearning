@@ -21,6 +21,13 @@
 import sys
 import numpy
 from utils import *
+import logging
+import argparse
+
+#logging.basicConfig(format=FORMAT)
+ch = logging.StreamHandler()
+logger = logging.getLogger('dA')
+logger.addHandler(ch)
 
 
 class dA(object):
@@ -68,6 +75,8 @@ class dA(object):
 
     # Encode
     def get_hidden_values(self, input):
+        logger.warn('x*W shape %s, hbias.shape %s', numpy.dot(input, self.W).shape,
+                    self.hbias.shape)
         return sigmoid(numpy.dot(input, self.W) + self.hbias)
 
     # Decode
@@ -152,4 +161,12 @@ def test_dA(learning_rate=0.1, corruption_level=0.3, training_epochs=50):
 
 
 if __name__ == "__main__":
-    test_dA()
+    parser = argparse.ArgumentParser(description='Denoising AutoEncoder')
+    parser.add_argument('--data')
+    parser.add_argument('--iterations', type=int)
+    parser.add_argument('--n_hidden', type=int)
+    parser.add_argument('--corruption', type=float)
+    parser.add_argument('--batch', type=int)
+    args = parser.parse_args()
+
+    da = dA(input=data, n_visible=20, n_hidden=5, numpy_rng=rng)
